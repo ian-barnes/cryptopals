@@ -1,0 +1,11 @@
+(executable
+ (name test)
+ (libraries
+  alcotest
+  cryptopals
+))
+
+(alias
+ (name runtest)
+ (deps test.exe)
+ (action (run %{deps} -q --color=always)))

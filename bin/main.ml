@@ -1,0 +1,1 @@
+let () = Cryptopals.Hello.main ()
