@@ -4,7 +4,9 @@ let read_lines f =
     match input_line input with
     | line -> add_line (line :: acc)
     | exception End_of_file ->
-        close_in input;
-        CCList.rev acc
+      close_in input;
+      CCList.rev acc
   in
   add_line []
+
+let read_all f = f |> read_lines |> CCString.concat "\n"

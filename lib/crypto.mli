@@ -1,15 +1,3 @@
-module Bytes : sig
-  type t
-
-  val of_string : string -> t
-
-  val to_string : t -> string
-
-  val xor : t -> t -> t
-
-  val repeating_key_xor : key:t -> t -> t
-end
-
 module Hex : sig
   module Digit : sig
     type t
@@ -40,10 +28,26 @@ end
 
 val hex_to_base64 : string -> string
 
-val printable : string -> string
+val score : Bytes.t -> int
 
-val score : string -> int
+val decode_single_char_xor : Bytes.t -> Bytes.t
 
-val decode_single_char_xor : string -> string
+val detect_single_char_xor : Bytes.t list -> Bytes.t
 
-val detect_single_char_xor : string -> string
+module Repeating_key_xor : sig
+  val encode : key:Bytes.t -> Bytes.t -> Bytes.t
+
+  val decode : key:Bytes.t -> Bytes.t -> Bytes.t
+
+  val hamming_weight : Bytes.t -> int
+
+  val hamming_distance : Bytes.t -> Bytes.t -> int
+
+  val key_length_score : Bytes.t -> int -> float
+
+  val best_guess_key_length : Bytes.t -> int
+
+  val guess_key : Bytes.t -> Bytes.t
+
+  val crack : Bytes.t -> Bytes.t * Bytes.t
+end
