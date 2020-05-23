@@ -38,4 +38,10 @@ end
 
 val hex_to_base64 : string -> string
 
+val printable : string -> string
+
+val score : string -> int
+
 val decode : string -> string
+
+val detect_single_char_xor : string -> string

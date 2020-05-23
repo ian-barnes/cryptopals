@@ -1,4 +1,4 @@
-open Cryptopals
+open Lib
 
 let test_hex_to_base64 () =
   let test ~input ~expected =
@@ -87,6 +87,11 @@ let test_frequency_analysis () =
       "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
     ~expected:"Cooking MC's like a pound of bacon"
 
+let test_detect_single_char_xor () =
+  let expected = "Now that the party is jumping?" in
+  let actual = Crypto.detect_single_char_xor "4.txt" in
+  Alcotest.(check string) "Challenge 4" expected actual
+
 let () =
   Alcotest.run "cryptopals"
     [
@@ -97,4 +102,7 @@ let () =
       ("Challenge 2", [ Alcotest.test_case "Challenge 2" `Quick test_xor ]);
       ( "Challenge 3",
         [ Alcotest.test_case "Challenge 3" `Quick test_frequency_analysis ] );
+      ( "Challenge 4",
+        [ Alcotest.test_case "Challenge 4" `Quick test_detect_single_char_xor ]
+      );
     ]

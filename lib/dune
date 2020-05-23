@@ -1,4 +1,3 @@
 (library
- (name cryptopals)
- (libraries containers)
-)
+ (name lib)
+ (libraries containers))

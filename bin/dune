@@ -1,4 +1,4 @@
 (executable
- (public_name cryptopals)
+ (public_name main)
  (name main)
- (libraries cryptopals containers))
+ (libraries lib containers))

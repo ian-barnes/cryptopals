@@ -355,7 +355,9 @@ let dot_product m m' =
   let merged = CharMap.merge_safe ~f:prod m m' in
   CharMap.fold (fun _ v acc -> v + acc) merged 0
 
-let printable = CCString.filter (fun c -> c >= ' ' && c <= '~')
+let score s = dot_product (frequencies (CCString.lowercase_ascii s)) etaoin
+
+let printable = CCString.map (fun c -> if c >= ' ' && c <= '~' then c else '?')
 
 let decode s =
   let s = Hex.of_hex_string s in
@@ -366,14 +368,7 @@ let decode s =
       (fun m c -> CharMap.add c (Bytes.xor s (mask c len)) m)
       CharMap.empty chars
   in
-  let scoremap =
-    CharMap.map
-      (fun s ->
-        let freq_map = frequencies s in
-        let score = dot_product freq_map etaoin in
-        (s, score))
-      map
-  in
+  let scoremap = CharMap.map (fun s -> (s, score s)) map in
   let sorted =
     CharMap.to_list scoremap
     |> CCList.sort (fun (_, (_, n)) (_, (_, n')) -> compare n' n)
@@ -384,3 +379,11 @@ let decode s =
          (Printf.sprintf "%c -> \"%s\" : %d" key (printable plaintext) score))
      (CCList.take 10 sorted); *)
   sorted |> CCList.hd |> fun (_, (result, _)) -> printable result
+
+let detect_single_char_xor file =
+  file |> File.read_lines
+  |> CCList.map (fun line ->
+         let plaintext = decode line in
+         (plaintext, score plaintext))
+  |> CCList.sort (fun (_, score) (_, score') -> compare score' score)
+  |> CCList.hd |> fst

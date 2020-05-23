@@ -1,11 +1,13 @@
+(copy_files ../data/*)
+
 (executable
  (name test)
- (libraries
-  alcotest
-  cryptopals
-))
+ (libraries alcotest lib))
 
 (alias
  (name runtest)
- (deps test.exe)
- (action (run %{deps} -q --color=always)))
+ (deps
+  (glob_files *.txt)
+  (:exe test.exe))
+ (action
+  (run %{exe} -q --color=always)))
