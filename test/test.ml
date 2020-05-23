@@ -51,17 +51,17 @@ module Base64 = struct
 
   let tests =
     [
-      Alcotest.test_case "abc" `Quick
+      Alcotest.test_case "abc to_base64" `Quick
         (test_to_base64 ~input:"abc" ~expected:"YWJj");
-      Alcotest.test_case "abcd" `Quick
+      Alcotest.test_case "abcd to_base64" `Quick
         (test_to_base64 ~input:"abcd" ~expected:"YWJjZA==");
-      Alcotest.test_case "abcde" `Quick
+      Alcotest.test_case "abcde to_base64" `Quick
         (test_to_base64 ~input:"abcde" ~expected:"YWJjZGU=");
-      Alcotest.test_case "abc" `Quick
+      Alcotest.test_case "abc of_base64" `Quick
         (test_of_base64 ~input:"YWJj" ~expected:"abc");
-      Alcotest.test_case "abcd" `Quick
+      Alcotest.test_case "abcd of_base64" `Quick
         (test_of_base64 ~input:"YWJjZA==" ~expected:"abcd");
-      Alcotest.test_case "abcde" `Quick
+      Alcotest.test_case "abcde of_base64" `Quick
         (test_of_base64 ~input:"YWJjZGU=" ~expected:"abcde");
     ]
 end
@@ -79,7 +79,7 @@ let test_xor () =
 
 let test_frequency_analysis () =
   let test ~input ~expected =
-    let actual = Crypto.decode input in
+    let actual = Crypto.decode_single_char_xor input in
     Alcotest.(check string) "Challenge 3" expected actual
   in
   test
@@ -92,11 +92,37 @@ let test_detect_single_char_xor () =
   let actual = Crypto.detect_single_char_xor "4.txt" in
   Alcotest.(check string) "Challenge 4" expected actual
 
+module Repeating_key_xor = struct
+  let test ~input ~key ~expected () =
+    let actual =
+      Crypto.Bytes.repeating_key_xor
+        ~key:(Crypto.Bytes.of_string key)
+        (Crypto.Bytes.of_string input)
+      |> Crypto.Hex.to_hex_string
+    in
+    Alcotest.(check string) "repeating_key_xor" expected actual
+
+  let tests =
+    [
+      Alcotest.test_case "key longer than msg" `Quick
+        (test ~input:"AA" ~key:"key" ~expected:"2a24");
+      Alcotest.test_case "Challenge 5" `Quick
+        (test
+           ~input:
+             "Burning 'em, if you ain't quick and nimble\n\
+              I go crazy when I hear a cymbal" ~key:"ICE"
+           ~expected:
+             ( "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272"
+             ^ "a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
+             ));
+    ]
+end
+
 let () =
   Alcotest.run "cryptopals"
     [
-      ("hex to bytes", Hex.tests);
-      ("bytes to base64", Base64.tests);
+      ("Hex encoding", Hex.tests);
+      ("Base64 encoding", Base64.tests);
       ( "Challenge 1",
         [ Alcotest.test_case "Challenge 1" `Quick test_hex_to_base64 ] );
       ("Challenge 2", [ Alcotest.test_case "Challenge 2" `Quick test_xor ]);
@@ -105,4 +131,5 @@ let () =
       ( "Challenge 4",
         [ Alcotest.test_case "Challenge 4" `Quick test_detect_single_char_xor ]
       );
+      ("Repeating key XOR", Repeating_key_xor.tests);
     ]

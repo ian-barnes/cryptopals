@@ -6,11 +6,25 @@ module Bytes = struct
   let to_string s = s
 
   let xor a b =
-    let a = a |> CCString.to_list |> CCList.map CCChar.to_int in
-    let b = b |> CCString.to_list |> CCList.map CCChar.to_int in
-    let ints = CCList.map2 (fun m n -> m lxor n) a b in
-    ints |> CCList.map CCChar.of_int_exn |> CCString.of_list
+    assert (CCString.length a = CCString.length b);
+    let char_xor c c' =
+      CCChar.to_int c lxor CCChar.to_int c' |> CCChar.of_int_exn
+    in
+    CCString.map2 char_xor a b
+
+  let repeating_key_xor ~key msg =
+    let m = CCString.length key in
+    assert (m > 0);
+    let n = CCString.length msg in
+    let key = CCString.repeat key (1 + (n / m)) |> CCString.take n in
+    xor key msg
 end
+
+let remove_whitespace s =
+  let remove c =
+    CCString.replace ~which:`All ~sub:(CCChar.to_string c) ~by:""
+  in
+  s |> remove ' ' |> remove '\n' |> remove '\t' |> remove '\r'
 
 module Hex = struct
   module Digit = struct
@@ -63,6 +77,7 @@ module Hex = struct
     (16 * a) + b
 
   let of_hex_string s =
+    let s = remove_whitespace s in
     let chars = CCString.to_list s in
     let rec worker cs acc =
       match cs with
@@ -242,6 +257,7 @@ module Base64 = struct
     [ first ] |> CCList.map CCChar.of_int_exn |> CCString.of_list
 
   let of_base64 s =
+    let s = remove_whitespace s in
     assert (CCString.length s mod 4 = 0);
     let ints =
       s
@@ -291,25 +307,11 @@ end
 
 let hex_to_base64 s = s |> Hex.of_hex_string |> Base64.to_base64
 
-module IntMap = CCMap.Make (struct
-  type t = int
-
-  let compare = compare
-end)
-
 module CharMap = CCMap.Make (struct
   type t = char
 
   let compare = compare
 end)
-
-let range a b =
-  let rec worker a b l =
-    if a > b then l else worker a (b - 1) (CCChar.of_int_exn b :: l)
-  in
-  worker a b []
-
-let mask c len = CCString.pad ~c len ""
 
 let etaoin =
   [
@@ -359,31 +361,29 @@ let score s = dot_product (frequencies (CCString.lowercase_ascii s)) etaoin
 
 let printable = CCString.map (fun c -> if c >= ' ' && c <= '~' then c else '?')
 
-let decode s =
+let range a b =
+  let rec worker a b acc =
+    if a > b then acc else worker a (b - 1) (CCChar.of_int_exn b :: acc)
+  in
+  worker a b []
+
+let decode_single_char_xor s =
   let s = Hex.of_hex_string s in
-  let len = String.length s in
-  let chars = range 0 255 in
-  let map =
-    CCList.fold_left
-      (fun m c -> CharMap.add c (Bytes.xor s (mask c len)) m)
-      CharMap.empty chars
-  in
-  let scoremap = CharMap.map (fun s -> (s, score s)) map in
-  let sorted =
-    CharMap.to_list scoremap
-    |> CCList.sort (fun (_, (_, n)) (_, (_, n')) -> compare n' n)
-  in
-  (* CCList.iter
-     (fun (key, (plaintext, score)) ->
-       print_endline
-         (Printf.sprintf "%c -> \"%s\" : %d" key (printable plaintext) score))
-     (CCList.take 10 sorted); *)
-  sorted |> CCList.hd |> fun (_, (result, _)) -> printable result
+  let mask c = CCString.repeat (CCChar.to_string c) (String.length s) in
+  CharMap.empty
+  |> CCList.fold_right
+       (fun c m -> CharMap.add c (Bytes.xor s (mask c)) m)
+       (range 0 255)
+  |> CharMap.map (fun s -> (s, score s))
+  |> CharMap.to_list
+  |> CCList.sort (fun (_, (_, n)) (_, (_, n')) -> compare n' n)
+  |> CCList.hd
+  |> fun (_, (result, _)) -> printable result
 
 let detect_single_char_xor file =
   file |> File.read_lines
   |> CCList.map (fun line ->
-         let plaintext = decode line in
+         let plaintext = decode_single_char_xor line in
          (plaintext, score plaintext))
   |> CCList.sort (fun (_, score) (_, score') -> compare score' score)
   |> CCList.hd |> fst

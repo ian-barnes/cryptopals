@@ -6,6 +6,8 @@ module Bytes : sig
   val to_string : t -> string
 
   val xor : t -> t -> t
+
+  val repeating_key_xor : key:t -> t -> t
 end
 
 module Hex : sig
@@ -42,6 +44,6 @@ val printable : string -> string
 
 val score : string -> int
 
-val decode : string -> string
+val decode_single_char_xor : string -> string
 
 val detect_single_char_xor : string -> string
