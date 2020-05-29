@@ -90,7 +90,7 @@ let test_frequency_analysis () =
     ~expected:"Cooking MC's like a pound of bacon"
 
 let test_detect_single_char_xor () =
-  let expected = "Now that the party is jumping?" in
+  let expected = "Now that the party is jumping\n" in
   let actual =
     "4.txt"
     |> File.read_lines
@@ -144,7 +144,7 @@ module Hamming_distance = struct
 end
 
 module Break_repeating_key_xor = struct
-  let test ~input ~expected () =
+  let test_key ~input ~expected () =
     let actual =
       input
       |> Crypto.Base64.of_base64
@@ -153,10 +153,58 @@ module Break_repeating_key_xor = struct
     in
     Alcotest.(check string) "Break repeating key XOR" expected actual
 
+  let test_decrypt ~input ~expected () =
+    let actual =
+      input
+      |> Crypto.Base64.of_base64
+      |> Crypto.Repeating_key_xor.crack
+      |> snd
+      |> Bytes.to_string
+    in
+    Alcotest.(check string)
+      "Crack and decrypt repeating key XOR" expected actual
+
   let tests =
-    [ Alcotest.test_case "abc" `Quick
-        (test ~input:"MQMACkIOGEIBDhpDFgsXCUIFCBQGQQYMGwcNQQ4KEBcME0IJFAUQTw=="
-           ~expected:"abc") ]
+    let challenge = File.read_all "6.txt" in
+    let target = File.read_all "6.decrypted.txt" in
+    [ Alcotest.test_case "Challenge 6 get key" `Quick
+        (test_key ~input:challenge ~expected:"Terminator X: Bring the noise")
+    ; Alcotest.test_case "Challenge 6 decrypt" `Quick
+        (test_decrypt ~input:challenge ~expected:target) ]
+end
+
+module Aes_ecb_mode = struct
+  let test ~input ~key ~expected () =
+    let key = Bytes.of_string key in
+    let actual =
+      input
+      |> Crypto.Base64.of_base64
+      |> Crypto.Aes_ecb_mode.decrypt ~key
+      |> Bytes.to_string
+    in
+    Alcotest.(check string)
+      "Decrypt AES ECB mode with known key" expected actual
+
+  let tests =
+    let challenge = File.read_all "7.txt" in
+    let target = File.read_all "7.decrypted.txt" in
+    [ Alcotest.test_case "Challenge 7" `Quick
+        (test ~input:challenge ~key:"YELLOW SUBMARINE" ~expected:target) ]
+end
+
+module File_io = struct
+  let test ~expected () =
+    File.write_all "foo.txt" expected;
+    let actual = File.read_all "foo.txt" in
+    Alcotest.(check string) "Write and read" expected actual
+
+  let tests =
+    let with_final_newline = "First line\nSecond line\n" in
+    let without_final_newline = "First line\nSecond line" in
+    [ Alcotest.test_case "Write and read with final newline" `Quick
+        (test ~expected:with_final_newline)
+    ; Alcotest.test_case "Write and read without final newline" `Quick
+        (test ~expected:without_final_newline) ]
 end
 
 let () =
@@ -172,4 +220,6 @@ let () =
       , [Alcotest.test_case "Challenge 4" `Quick test_detect_single_char_xor] )
     ; ("Repeating key XOR", Repeating_key_xor.tests)
     ; ("Hamming distance", Hamming_distance.tests)
-    ; ("Challenge 6", Break_repeating_key_xor.tests) ]
+    ; ("Challenge 6", Break_repeating_key_xor.tests)
+    ; ("Challenge 7", Aes_ecb_mode.tests)
+    ; ("File IO", File_io.tests) ]

@@ -51,3 +51,8 @@ module Repeating_key_xor : sig
 
   val crack : Bytes.t -> Bytes.t * Bytes.t
 end
+
+module Aes_ecb_mode : sig
+  val encrypt : key:Bytes.t -> Bytes.t -> Bytes.t
+  val decrypt : key:Bytes.t -> Bytes.t -> Bytes.t
+end
