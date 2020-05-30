@@ -21,3 +21,5 @@ val repeat : t -> int -> t
 val take : int -> t -> t
 
 val sub : t -> int -> int -> t
+
+val pad : ?side:[`Left | `Right] -> ?c:char -> int -> t -> t

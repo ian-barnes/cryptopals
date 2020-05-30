@@ -1,12 +1,16 @@
-.PHONY: format test run
+.PHONY: build format test run clean
 
-compile:
+build:
 	dune build @check @default
+
 format:
 	dune build @fmt --auto-promote
 
-test: compile
+test: build
 	dune build @runtest
 
-run: compile
+run: build
 	dune exec main
+
+clean:
+	dune clean

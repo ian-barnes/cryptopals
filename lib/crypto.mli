@@ -59,3 +59,7 @@ module Aes_ecb_mode : sig
 
   val detect : Bytes.t list -> Bytes.t
 end
+
+module Pkcs7 : sig
+  val pad : blocksize:int -> Bytes.t -> Bytes.t
+end

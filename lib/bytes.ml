@@ -26,3 +26,5 @@ let repeat = CCString.repeat
 let take = CCString.take
 
 let sub = CCString.sub
+
+let pad = CCString.pad

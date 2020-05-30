@@ -1,15 +1,12 @@
 open Lib
 
 let () =
-  let open Nocrypto.Cipher_block in
-  let key = AES.ECB.of_secret (Cstruct.of_string "YELLOW SUBMARINE") in
-  let ciphertext =
-    File.read_all "data/7.txt"
-    |> Crypto.Base64.of_base64
-    |> Bytes.to_string
-    |> Cstruct.of_string
+  let do_it n =
+    Printf.printf " \"%s\"\n"
+      ( "YELLOW SUBMARINE"
+      |> Bytes.of_string
+      |> Crypto.Pkcs7.pad ~blocksize:n
+      |> Bytes.to_string
+      |> CCString.escaped )
   in
-  let plaintext = AES.ECB.decrypt ~key ciphertext |> Cstruct.to_string in
-  print_endline ("plaintext = \n'" ^ plaintext ^ "'");
-
-  File.write_all "foo.txt" plaintext
+  CCList.iter do_it [20; 19; 18; 17; 16]

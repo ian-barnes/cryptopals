@@ -107,7 +107,7 @@ module Repeating_key_xor = struct
         (Bytes.of_string input)
       |> Crypto.Hex.to_hex_string
     in
-    Alcotest.(check string) "repeating_key_xor" expected actual
+    Alcotest.(check string) "Repeating key XOR" expected actual
 
   let tests =
     [ Alcotest.test_case "key longer than msg" `Quick
@@ -174,7 +174,7 @@ module Break_repeating_key_xor = struct
 end
 
 module Aes_ecb_mode = struct
-  let test_decrypt ~input ~key ~expected () =
+  let test ~input ~key ~expected () =
     let key = Bytes.of_string key in
     let actual =
       input
@@ -185,7 +185,15 @@ module Aes_ecb_mode = struct
     Alcotest.(check string)
       "Decrypt AES ECB mode with known key" expected actual
 
-  let test_detect ~input ~expected () =
+  let tests =
+    let ciphertext = File.read_all "7.txt" in
+    let plaintext = File.read_all "7.decrypted.txt" in
+    [ Alcotest.test_case "Challenge 7" `Quick
+        (test ~input:ciphertext ~key:"YELLOW SUBMARINE" ~expected:plaintext) ]
+end
+
+module Detect_ecb_mode = struct
+  let test ~input ~expected () =
     let actual =
       input
       |> CCList.map Crypto.Hex.of_hex_string
@@ -196,8 +204,6 @@ module Aes_ecb_mode = struct
     Alcotest.(check string) "Detect AES ECB mode" expected actual
 
   let tests =
-    let ciphertext = File.read_all "7.txt" in
-    let plaintext = File.read_all "7.decrypted.txt" in
     let candidates = File.read_lines "8.txt" in
     let winner =
       {|
@@ -208,11 +214,8 @@ module Aes_ecb_mode = struct
         d403180c98c8f6db1f2a3f9c4040deb0ab51b29933f2c123c58386b06fba186a
         |}
     in
-    [ Alcotest.test_case "Challenge 7" `Quick
-        (test_decrypt ~input:ciphertext ~key:"YELLOW SUBMARINE"
-           ~expected:plaintext)
-    ; Alcotest.test_case "Challenge 8" `Quick
-        (test_detect ~input:candidates ~expected:winner) ]
+    [ Alcotest.test_case "Challenge 8" `Quick
+        (test ~input:candidates ~expected:winner) ]
 end
 
 module File_io = struct
@@ -230,6 +233,39 @@ module File_io = struct
         (test ~expected:without_final_newline) ]
 end
 
+module Pkcs7_padding = struct
+  let test ~input ~expected () =
+    let actual =
+      input
+      |> Bytes.of_string
+      |> Crypto.Pkcs7.pad ~blocksize:16
+      |> Bytes.to_string
+    in
+    Alcotest.(check string) "Correct PKCS#7 padding" expected actual
+
+  let tests =
+    [ Alcotest.test_case "Four short" `Quick
+        (test ~input:"YELLOW SUBMA" ~expected:"YELLOW SUBMA\x04\x04\x04\x04")
+    ; Alcotest.test_case "Three short" `Quick
+        (test ~input:"YELLOW SUBMAR" ~expected:"YELLOW SUBMAR\003\003\003")
+    ; Alcotest.test_case "Two short" `Quick
+        (test ~input:"YELLOW SUBMARI" ~expected:"YELLOW SUBMARI\002\002")
+    ; Alcotest.test_case "One short" `Quick
+        (test ~input:"YELLOW SUBMARIN" ~expected:"YELLOW SUBMARIN\001")
+    ; Alcotest.test_case "Full block" `Quick
+        (test ~input:"YELLOW SUBMARINE"
+           ~expected:
+             ( "YELLOW SUBMARINE"
+             ^ "\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10"
+             ))
+    ; Alcotest.test_case "One long" `Quick
+        (test ~input:"YELLOW SUBMARINES"
+           ~expected:
+             ( "YELLOW SUBMARINES"
+             ^ "\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f" ))
+    ]
+end
+
 let () =
   Alcotest.run "cryptopals"
     [ ("Hex encoding", Hex.tests)
@@ -241,8 +277,10 @@ let () =
       , [Alcotest.test_case "Challenge 3" `Quick test_frequency_analysis] )
     ; ( "Challenge 4"
       , [Alcotest.test_case "Challenge 4" `Quick test_detect_single_char_xor] )
-    ; ("Repeating key XOR", Repeating_key_xor.tests)
+    ; ("Challenge 5", Repeating_key_xor.tests)
     ; ("Hamming distance", Hamming_distance.tests)
     ; ("Challenge 6", Break_repeating_key_xor.tests)
     ; ("Challenge 7", Aes_ecb_mode.tests)
-    ; ("File IO", File_io.tests) ]
+    ; ("File IO", File_io.tests)
+    ; ("Challenge 8", Detect_ecb_mode.tests)
+    ; ("Challenge 9", Pkcs7_padding.tests) ]
