@@ -427,8 +427,8 @@ module Repeating_key_xor = struct
       |> CCList.sort (fun (_, score) (_, score') -> compare score score')
     in
     (* CCList.iter
-      (fun (len, score) -> print_endline (Printf.sprintf "%d -> %f" len score))
-      (scores |> CCList.take 10); *)
+       (fun (len, score) -> print_endline (Printf.sprintf "%d -> %f" len score))
+       (scores |> CCList.take 10); *)
     scores |> CCList.hd |> fst
 
   let guess_key (b : Bytes.t) =
@@ -449,19 +449,31 @@ module Repeating_key_xor = struct
 end
 
 module Aes_ecb_mode = struct
+  (* Assume 128 bit = 16 byte block size *)
   open Nocrypto.Cipher_block
 
   let encrypt ~key msg =
     assert (Bytes.length key = 16);
-    assert ((Bytes.length msg) mod 16 = 0);
-    let key = key |> Bytes.to_string |> Cstruct.of_string |> AES.ECB.of_secret in
+    assert (Bytes.length msg mod 16 = 0);
+    let key =
+      key |> Bytes.to_string |> Cstruct.of_string |> AES.ECB.of_secret
+    in
     let msg = msg |> Bytes.to_string |> Cstruct.of_string in
     AES.ECB.encrypt ~key msg |> Cstruct.to_string |> Bytes.of_string
-  
+
   let decrypt ~key msg =
     assert (Bytes.length key = 16);
-    assert ((Bytes.length msg) mod 16 = 0);
-    let key = key |> Bytes.to_string |> Cstruct.of_string |> AES.ECB.of_secret in
+    assert (Bytes.length msg mod 16 = 0);
+    let key =
+      key |> Bytes.to_string |> Cstruct.of_string |> AES.ECB.of_secret
+    in
     let msg = msg |> Bytes.to_string |> Cstruct.of_string in
     AES.ECB.decrypt ~key msg |> Cstruct.to_string |> Bytes.of_string
+
+  let detect (texts : Bytes.t list) : Bytes.t =
+    texts
+    |> CCList.map (fun s -> (s, Repeating_key_xor.key_length_score s 16))
+    |> CCList.sort (fun (_, x) (_, x') -> compare x x')
+    |> CCList.hd
+    |> fst
 end

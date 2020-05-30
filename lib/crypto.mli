@@ -54,5 +54,8 @@ end
 
 module Aes_ecb_mode : sig
   val encrypt : key:Bytes.t -> Bytes.t -> Bytes.t
+
   val decrypt : key:Bytes.t -> Bytes.t -> Bytes.t
+
+  val detect : Bytes.t list -> Bytes.t
 end
