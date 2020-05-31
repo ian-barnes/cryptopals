@@ -11,7 +11,8 @@ let to_char_list = CCString.to_list
 let of_char_list = CCString.of_list
 
 let xor a b =
-  assert (CCString.length a = CCString.length b);
+  Assert.assert_with "xor: lengths must be equal"
+    (CCString.length a = CCString.length b);
   let char_xor c c' =
     CCChar.to_int c lxor CCChar.to_int c' |> CCChar.of_int_exn
   in
