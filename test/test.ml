@@ -12,4 +12,5 @@ let () =
     ; ("Challenge 7", Test_aes_ecb_mode.tests)
     ; ("File IO", Test_file_io.tests)
     ; ("Challenge 8", Test_detect_ecb_mode.tests)
-    ; ("Challenge 9", Test_pkcs7_padding.tests) ]
+    ; ("Challenge 9", Test_pkcs7_padding.tests)
+    ; ("Challenge 10", Test_cbc_mode.tests) ]

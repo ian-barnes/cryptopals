@@ -4,7 +4,7 @@ let test ~input ~expected () =
   let actual =
     input
     |> Bytes.of_string
-    |> Crypto.Pkcs7.pad ~blocksize:16
+    |> Pkcs7_padding.pad ~blocksize:16
     |> Bytes.to_string
   in
   Alcotest.(check string) "Correct PKCS#7 padding" expected actual

@@ -4,7 +4,7 @@ let test ~input ~expected () =
   let actual =
     input
     |> CCList.map Hex.of_hex_string
-    |> Crypto.Aes_ecb_mode.detect
+    |> Aes_ecb_mode.detect
     |> Bytes.to_string
   in
   let expected = expected |> Hex.of_hex_string |> Bytes.to_string in

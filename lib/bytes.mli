@@ -23,3 +23,11 @@ val take : int -> t -> t
 val sub : t -> int -> int -> t
 
 val pad : ?side:[`Left | `Right] -> ?c:char -> int -> t -> t
+
+val take_drop : int -> t -> t * t
+
+val empty : t
+
+val to_blocks : ?blocksize:int -> t -> t list
+
+val of_blocks : t list -> t

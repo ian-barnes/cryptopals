@@ -2,7 +2,7 @@ open Lib
 
 let test ~first ~second ~expected () =
   let actual =
-    Crypto.Repeating_key_xor.hamming_distance (Bytes.of_string first)
+    Repeating_key_xor.hamming_distance (Bytes.of_string first)
       (Bytes.of_string second)
   in
   Alcotest.(check int) "Hamming distance" expected actual

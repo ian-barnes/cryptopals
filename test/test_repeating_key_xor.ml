@@ -1,6 +1,6 @@
 let test ~input ~key ~expected () =
   let actual =
-    Lib.Crypto.Repeating_key_xor.encode ~key:(Lib.Bytes.of_string key)
+    Lib.Repeating_key_xor.encode ~key:(Lib.Bytes.of_string key)
       (Lib.Bytes.of_string input)
     |> Lib.Hex.to_hex_string
   in

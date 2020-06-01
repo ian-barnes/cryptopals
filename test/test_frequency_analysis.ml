@@ -2,10 +2,7 @@ open Lib
 
 let test ~input ~expected () =
   let actual =
-    input
-    |> Hex.of_hex_string
-    |> Crypto.decode_single_char_xor
-    |> Bytes.to_string
+    input |> Hex.of_hex_string |> Single_char_xor.decode |> Bytes.to_string
   in
   Alcotest.(check string) "Challenge 3" expected actual
 
