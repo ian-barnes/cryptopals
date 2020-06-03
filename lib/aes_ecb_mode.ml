@@ -2,6 +2,10 @@ open Nocrypto.Cipher_block
 
 (* Assume 128 bit = 16 byte block size *)
 
+(* Should split this into an AES encrypt / decrypt single block function, and
+   an ECB-mode encrypt / decrypt multiple blocks. Ideally, a block encryption
+   should be a pipeline: msg |> padding |> block_mode |> single_block_fn. *)
+
 let encrypt ~key msg =
   Assert.assert_with "AES key length must be 128 bits" (Bytes.length key = 16);
   Assert.assert_with "AES msg bad length" (Bytes.length msg mod 16 = 0);

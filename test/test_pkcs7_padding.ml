@@ -21,12 +21,11 @@ let tests =
   ; Alcotest.test_case "Full block" `Quick
       (test ~input:"YELLOW SUBMARINE"
          ~expected:
-           ( "YELLOW SUBMARINE"
+           ("YELLOW SUBMARINE"
            ^ "\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10"
            ))
   ; Alcotest.test_case "One long" `Quick
       (test ~input:"YELLOW SUBMARINES"
          ~expected:
-           ( "YELLOW SUBMARINES"
-           ^ "\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f" ))
-  ]
+           ("YELLOW SUBMARINES"
+           ^ "\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f")) ]

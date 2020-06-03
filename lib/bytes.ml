@@ -46,3 +46,7 @@ let to_blocks ?blocksize:(n = 16) msg =
   worker msg []
 
 let of_blocks blocks = CCString.concat "" blocks
+
+let append ~suffix s = s ^ suffix
+
+let prepend ~prefix s = prefix ^ s

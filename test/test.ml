@@ -13,4 +13,5 @@ let () =
     ; ("File IO", Test_file_io.tests)
     ; ("Challenge 8", Test_detect_ecb_mode.tests)
     ; ("Challenge 9", Test_pkcs7_padding.tests)
-    ; ("Challenge 10", Test_cbc_mode.tests) ]
+    ; ("Challenge 10", Test_cbc_mode.tests)
+    ; ("Challenge 11", Test_ecb_cbc_detection_oracle.tests) ]

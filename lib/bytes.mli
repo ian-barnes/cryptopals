@@ -31,3 +31,7 @@ val empty : t
 val to_blocks : ?blocksize:int -> t -> t list
 
 val of_blocks : t list -> t
+
+val append : suffix:t -> t -> t
+
+val prepend : prefix:t -> t -> t

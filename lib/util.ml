@@ -39,3 +39,13 @@ let list_stripes n l =
 
 let stripes n s =
   s |> Bytes.to_char_list |> list_stripes n |> CCList.map Bytes.of_char_list
+
+let wrap n s =
+  let rec worker s acc =
+    if CCString.length s > n then
+      let (line, rest) = CCString.take_drop n s in
+      worker rest (line :: acc)
+    else
+      s :: acc
+  in
+  worker s [] |> CCList.rev |> CCString.concat "\n"

@@ -1,0 +1,24 @@
+opam-version: "2.0"
+name: "cryptopals"
+version: "0.1"
+synopsis: "Solutions to the Cryptopals challenges"
+description: """
+Work in progress... Exercise in learning crypto and improving my OCaml at the
+same time: trying to solve the Cryptopals challenges in OCaml with Opam and
+Dune, and to find a good structure and workflow, learn better how the tools
+work, get more familiarity with the libraries and the language...
+"""
+maintainer: "Ian Barnes <ianbarnes1963@gmail.com>"
+authors: "Ian Barnes <ianbarnes1963@gmail.com>"
+homepage: "https://github.com/ian-barnes/cryptopals"
+bug-reports: "https://github.com/ian-barnes/cryptopals/issues"
+build:[[make]]
+depends: [
+ "alcotest"
+ "containers"
+ "dune"
+ "merlin"
+ "nocrypto"
+ "ocamlformat"
+ "ocaml-lsp-server"
+]

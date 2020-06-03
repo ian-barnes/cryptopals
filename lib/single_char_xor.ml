@@ -46,7 +46,7 @@ let normalise (m : int CharMap.t) : float CharMap.t =
   let total = CharMap.fold (fun _ n acc -> n + acc) m 0 in
   CharMap.map (fun n -> float_of_int n /. float_of_int total) m
 
-let chi_squared (a : float CharMap.t) (b : float CharMap.t) : float =
+let not_chi_squared (a : float CharMap.t) (b : float CharMap.t) : float =
   (* Assume both a and b are already normalised *)
   let squared_differences =
     let f _c = function
@@ -59,8 +59,9 @@ let chi_squared (a : float CharMap.t) (b : float CharMap.t) : float =
   CharMap.fold (fun _ x acc -> x +. acc) squared_differences 0.0
 
 let score (b : Bytes.t) : float =
-  chi_squared (normalise etaoin)
+  not_chi_squared
     (normalise (frequencies (Bytes.lowercase_ascii b)))
+    (normalise etaoin)
 
 let crack (s : Bytes.t) : char * Bytes.t =
   let mask c =
