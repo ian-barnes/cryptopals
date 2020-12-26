@@ -33,7 +33,7 @@ end
    randomly chosen from ECB or CBC, and adding 5-10 random bytes both before and
    after the given plaintext input data. *)
 
-let encrypt mode data =
+let encryption_oracle_helper mode data =
   let key = random_aes_key () in
   let iv = random_aes_key () in
   let prefix_length = 5 + Random.int 5 in
@@ -51,20 +51,20 @@ let encrypt mode data =
   |> Pkcs7_padding.pad ~blocksize:16
   |> cipher
 
-let random_encrypt data =
+let encryption_oracle data =
   let mode =
     if Random.bool () then
       Block_mode.ECB
     else
       Block_mode.CBC
   in
-  encrypt mode data
+  encryption_oracle_helper mode data
 
-(* Part 3: An oracle, that given a block cipher function as input, determines
-   whether it is using ECB mode or CBC mode. *)
+(* Part 3: Block mode detector: a function that given a block cipher function as
+   input, determines whether it is using ECB mode or CBC mode. *)
 
-let oracle (cipher : Bytes.t -> Bytes.t) : Block_mode.t =
-  let data = String.make 128 '\x00' |> Bytes.of_string in
+let block_mode_detector (cipher : Bytes.t -> Bytes.t) : Block_mode.t =
+  let data = String.make 1024 '\x00' |> Bytes.of_string in
   let ciphertext = data |> cipher in
   let score = Repeating_key_xor.key_length_score ciphertext 16 in
   if score > 3.1 then

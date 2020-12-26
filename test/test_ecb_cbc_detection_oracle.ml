@@ -3,8 +3,8 @@ open Lib.Ecb_cbc_detection_oracle
 let _ = Random.self_init ()
 
 let test_once ~mode =
-  let cipher = encrypt mode in
-  oracle cipher = mode
+  let cipher = encryption_oracle_helper mode in
+  block_mode_detector cipher = mode
 
 let test ~mode () =
   let open Lib.Util in
@@ -29,6 +29,6 @@ let test_random () =
   Alcotest.(check bool) "Detect block mode" expected actual
 
 let tests =
-  [ Alcotest.test_case "ECB mode" `Quick (test ~mode:Block_mode.ECB)
-  ; Alcotest.test_case "CBC mode" `Quick (test ~mode:Block_mode.CBC)
-  ; Alcotest.test_case "Random mode" `Quick test_random ]
+  [ Alcotest.test_case "ECB mode" `Slow (test ~mode:Block_mode.ECB)
+  ; Alcotest.test_case "CBC mode" `Slow (test ~mode:Block_mode.CBC)
+  ; Alcotest.test_case "Random mode" `Slow test_random ]

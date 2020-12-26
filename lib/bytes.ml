@@ -26,13 +26,19 @@ let repeat = CCString.repeat
 
 let take = CCString.take
 
-let sub = CCString.sub
-
-let pad = CCString.pad
+let drop = CCString.drop
 
 let take_drop = CCString.take_drop
 
+let sub = CCString.sub
+
+let get = CCString.get
+
+let pad = CCString.pad
+
 let empty = ""
+
+let is_empty = CCString.is_empty
 
 let to_blocks ?blocksize:(n = 16) msg =
   Assert.assert_with "bad msg length" (length msg mod n = 0);
@@ -50,3 +56,13 @@ let of_blocks blocks = CCString.concat "" blocks
 let append ~suffix s = s ^ suffix
 
 let prepend ~prefix s = prefix ^ s
+
+let chop_suffix_exn ~msg ~suffix s =
+  Assert.assert_with msg (CCString.suffix ~suf:suffix s);
+  CCString.chop_suffix ~suf:suffix s |> CCOpt.get_exn
+
+let to_printable_string = String.escaped
+
+let compare = compare
+
+let of_char c = of_char_list [c]

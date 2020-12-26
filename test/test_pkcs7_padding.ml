@@ -1,6 +1,6 @@
 open Lib
 
-let test ~input ~expected () =
+let test_pad ~input ~expected () =
   let actual =
     input
     |> Bytes.of_string
@@ -9,23 +9,70 @@ let test ~input ~expected () =
   in
   Alcotest.(check string) "Correct PKCS#7 padding" expected actual
 
+let test_unpad_good ~input ~expected () =
+  let actual =
+    input
+    |> Bytes.of_string
+    |> Pkcs7_padding.unpad ~blocksize:16
+    |> Bytes.to_string
+  in
+  Alcotest.(check string) "Correct padding" expected actual
+
+let test_unpad_bad ~input ~msg () =
+  let f () =
+    let _ = input |> Bytes.of_string |> Pkcs7_padding.unpad ~blocksize:16 in
+    ()
+  in
+  Alcotest.check_raises "Bad padding" (Failure msg) f
+
 let tests =
-  [ Alcotest.test_case "Four short" `Quick
-      (test ~input:"YELLOW SUBMA" ~expected:"YELLOW SUBMA\x04\x04\x04\x04")
-  ; Alcotest.test_case "Three short" `Quick
-      (test ~input:"YELLOW SUBMAR" ~expected:"YELLOW SUBMAR\003\003\003")
-  ; Alcotest.test_case "Two short" `Quick
-      (test ~input:"YELLOW SUBMARI" ~expected:"YELLOW SUBMARI\002\002")
-  ; Alcotest.test_case "One short" `Quick
-      (test ~input:"YELLOW SUBMARIN" ~expected:"YELLOW SUBMARIN\001")
-  ; Alcotest.test_case "Full block" `Quick
-      (test ~input:"YELLOW SUBMARINE"
+  [ Alcotest.test_case "PKCS#7 Pad: Four short" `Quick
+      (test_pad ~input:"YELLOW SUBMA" ~expected:"YELLOW SUBMA\x04\x04\x04\x04")
+  ; Alcotest.test_case "PKCS#7 Pad: Three short" `Quick
+      (test_pad ~input:"YELLOW SUBMAR" ~expected:"YELLOW SUBMAR\x03\x03\x03")
+  ; Alcotest.test_case "PKCS#7 Pad: Two short" `Quick
+      (test_pad ~input:"YELLOW SUBMARI" ~expected:"YELLOW SUBMARI\x02\x02")
+  ; Alcotest.test_case "PKCS#7 Pad: One short" `Quick
+      (test_pad ~input:"YELLOW SUBMARIN" ~expected:"YELLOW SUBMARIN\x01")
+  ; Alcotest.test_case "PKCS#7 Pad: Full block" `Quick
+      (test_pad ~input:"YELLOW SUBMARINE"
          ~expected:
            ("YELLOW SUBMARINE"
            ^ "\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10"
            ))
-  ; Alcotest.test_case "One long" `Quick
-      (test ~input:"YELLOW SUBMARINES"
+  ; Alcotest.test_case "PKCS#7 Pad: One long" `Quick
+      (test_pad ~input:"YELLOW SUBMARINES"
          ~expected:
            ("YELLOW SUBMARINES"
-           ^ "\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f")) ]
+           ^ "\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f"))
+  ; Alcotest.test_case "PKCS#7 unpad: Four short" `Quick
+      (test_unpad_good ~input:"YELLOW SUBMA\x04\x04\x04\x04"
+         ~expected:"YELLOW SUBMA")
+  ; Alcotest.test_case "PKCS#7 unpad: Three short" `Quick
+      (test_unpad_good ~input:"YELLOW SUBMAR\x03\x03\x03"
+         ~expected:"YELLOW SUBMAR")
+  ; Alcotest.test_case "PKCS#7 unpad: Two short" `Quick
+      (test_unpad_good ~input:"YELLOW SUBMARI\x02\x02"
+         ~expected:"YELLOW SUBMARI")
+  ; Alcotest.test_case "PKCS#7 unpad: One short" `Quick
+      (test_unpad_good ~input:"YELLOW SUBMARIN\x01" ~expected:"YELLOW SUBMARIN")
+  ; Alcotest.test_case "PKCS#7 unpad: Full block" `Quick
+      (test_unpad_good
+         ~input:
+           ("YELLOW SUBMARINE"
+           ^ "\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10"
+           )
+         ~expected:"YELLOW SUBMARINE")
+  ; Alcotest.test_case "PKCS#7 unpad: One long" `Quick
+      (test_unpad_good
+         ~input:
+           ("YELLOW SUBMARINES"
+           ^ "\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f")
+         ~expected:"YELLOW SUBMARINES")
+  ; Alcotest.test_case "PKCS#7 unpad: Wrong padding value" `Quick
+      (test_unpad_bad ~input:"YELLOW SUBMA\x05\x05\x05\x05" ~msg:"padding error")
+  ; Alcotest.test_case "PKCS#7 unpad: Bad block length" `Quick
+      (test_unpad_bad ~input:"YELLOW SUBMA" ~msg:"padding error")
+  ; Alcotest.test_case "PKCS#7 unpad: Illegal padding value" `Quick
+      (test_unpad_bad ~input:"YELLOW SUBMA\x00\x00\x00\x00" ~msg:"padding error")
+  ]

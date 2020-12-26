@@ -1,4 +1,4 @@
-.PHONY: check deps build format test run clean
+.PHONY: check deps build format test slow run clean
 
 check:
 	dune build @check
@@ -17,6 +17,10 @@ format:
 
 test: build
 	dune build @runtest
+	@echo
+
+slow: build
+	dune build @slowtests
 	@echo
 
 run: build

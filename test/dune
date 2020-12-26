@@ -11,3 +11,11 @@
   (:exe test.exe))
  (action
   (run %{exe} -q --color=always)))
+
+(alias
+ (name slowtests)
+ (deps
+  (glob_files *.txt)
+  (:exe test.exe))
+ (action
+  (run %{exe} --color=always)))

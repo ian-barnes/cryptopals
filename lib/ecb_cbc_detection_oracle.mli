@@ -8,8 +8,8 @@ module Block_mode : sig
   val to_string : t -> string
 end
 
-val encrypt : Block_mode.t -> Bytes.t -> Bytes.t
+val encryption_oracle_helper : Block_mode.t -> Bytes.t -> Bytes.t
 
-val random_encrypt : Bytes.t -> Bytes.t
+val encryption_oracle : Bytes.t -> Bytes.t
 
-val oracle : (Bytes.t -> Bytes.t) -> Block_mode.t
+val block_mode_detector : (Bytes.t -> Bytes.t) -> Block_mode.t
