@@ -15,4 +15,5 @@ let () =
     ; ("Challenge 9", Test_pkcs7_padding.tests)
     ; ("Challenge 10", Test_cbc_mode.tests)
     ; ("Challenge 11", Test_ecb_cbc_detection_oracle.tests)
-    ; ("Challenge 12", Test_ecb_decryption_simple.tests) ]
+    ; ("Challenge 12", Test_ecb_decryption_simple.tests)
+    ; ("Challenge 13", Test_ecb_cut_and_paste.tests) ]

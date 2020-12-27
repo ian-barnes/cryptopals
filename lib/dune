@@ -1,3 +1,5 @@
 (library
  (name lib)
- (libraries containers nocrypto))
+ (libraries containers nocrypto yojson)
+ (preprocess
+  (pps ppx_deriving.std)))

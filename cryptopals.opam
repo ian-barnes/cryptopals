@@ -21,4 +21,5 @@ depends: [
  "nocrypto"
  "ocamlformat"
  "ocaml-lsp-server"
+ "yojson"
 ]
