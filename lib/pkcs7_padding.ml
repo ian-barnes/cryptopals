@@ -13,6 +13,3 @@ let unpad ~blocksize s =
   Assert.assert_with msg (0 < deficit && deficit <= blocksize);
   let suffix = CCString.make deficit last |> Bytes.of_string in
   Bytes.chop_suffix_exn ~msg ~suffix s
-
-(* Note that this function should never be used in this form for actual
-   decryption as it is vulnerable to padding oracle attacks by design. *)
