@@ -1,3 +1,5 @@
+let _ = Random.self_init ()
+
 let range a b =
   let rec worker a b acc =
     if a > b then
@@ -49,3 +51,11 @@ let wrap n s =
       s :: acc
   in
   worker s [] |> CCList.rev |> CCString.concat "\n"
+
+let random_bytes length =
+  let rec worker n acc =
+    match n with
+    | 0 -> acc |> CCList.rev_map CCChar.of_int_exn |> Bytes.of_char_list
+    | n -> worker (n - 1) (Random.int 256 :: acc)
+  in
+  worker length []

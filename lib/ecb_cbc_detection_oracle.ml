@@ -7,17 +7,9 @@
 
 let _ = Random.self_init ()
 
-let random_bytes length =
-  let rec worker n acc =
-    match n with
-    | 0 -> acc |> CCList.rev_map CCChar.of_int_exn |> Bytes.of_char_list
-    | n -> worker (n - 1) (Random.int 256 :: acc)
-  in
-  worker length []
-
 (* Part 1: A function to generate a random AES key *)
 
-let random_aes_key () = random_bytes 16
+let random_aes_key () = Util.random_bytes 16
 
 module Block_mode = struct
   type t =
@@ -36,10 +28,8 @@ end
 let encryption_oracle_helper mode data =
   let key = random_aes_key () in
   let iv = random_aes_key () in
-  let prefix_length = 5 + Random.int 5 in
-  let prefix = random_bytes prefix_length in
-  let suffix_length = 5 + Random.int 5 in
-  let suffix = random_bytes suffix_length in
+  let prefix = Util.random_bytes (5 + Random.int 5) in
+  let suffix = Util.random_bytes (5 + Random.int 5) in
   let cipher =
     match mode with
     | Block_mode.ECB -> Aes_ecb_mode.encrypt ~key

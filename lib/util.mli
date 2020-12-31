@@ -7,3 +7,5 @@ val printable : string -> string
 val stripes : int -> Bytes.t -> Bytes.t list
 
 val wrap : int -> string -> string
+
+val random_bytes : int -> Bytes.t

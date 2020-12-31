@@ -1,11 +1,12 @@
-(* Challenge 12 *)
+(* Challenge 14 *)
 
 let _ = Random.self_init ()
 
 module Server = struct
-  (* Part 1: the server. The oracle takes arbitrary input from a client, appends
-     the unknown string, PKCS#7 pads the result, encrypts it with an unknown key
-     using AES/ECB, and returns the resulting ciphertext. *)
+  (* Part 1: the server. This is very similar to Challenge 12 except that this
+     time the oracle also prepends a random number (between 5 and 10) of random
+     bytes to the client input before appending the unknown string, padding and
+     encrypting. *)
 
   let blocksize = 16
 
@@ -20,9 +21,12 @@ module Server = struct
     |}
     |> Base64.of_base64
 
+  let random_prefix = Util.random_bytes (5 + Random.int 5)
+
   let oracle data =
     data
     |> Bytes.append ~suffix:unknown
+    |> Bytes.prepend ~prefix:random_prefix
     |> Pkcs7_padding.pad ~blocksize
     |> Aes_ecb_mode.encrypt ~key
 end
@@ -56,16 +60,32 @@ module Client = struct
 
   let block_mode = Ecb_cbc_detection_oracle.block_mode_detector
 
-  (* Step 3: Decryption *)
+  (* Step 3: Determine the length of the random prefix *)
+
+  let prefix_length f blocksize =
+    let target = zeros blocksize |> f |> Bytes.to_blocks |> CCList.hd in
+    let deficit =
+      Util.range 1 blocksize
+      |> CCList.map (fun n -> (n, zeros n |> f |> Bytes.to_blocks |> CCList.hd))
+      |> CCList.find (fun (_, block) -> block = target)
+      |> fst
+    in
+    blocksize - deficit
+
+  (* Step 4: Decryption *)
 
   let decrypt f =
-    Assert.assert_with "Only works for ECB mode"
+    Assert.assert_with "This only works for ECB mode"
       (block_mode f = Ecb_cbc_detection_oracle.Block_mode.ECB);
 
     let (blocksize, length) = blocksize_and_length f in
 
+    let prefix_length = prefix_length f blocksize in
+
+    let msg_length = length - prefix_length in
+
     let rec worker ~byte_num ~block_num ~msg ~pad =
-      if byte_num = length then
+      if byte_num = msg_length then
         msg
       else
         (* Decrypt one additional byte *)
@@ -104,5 +124,6 @@ module Client = struct
         let byte_num = byte_num + 1 in
         worker ~byte_num ~block_num ~msg ~pad
     in
-    worker ~byte_num:0 ~block_num:0 ~msg:Bytes.empty ~pad:(zeros blocksize)
+    let pad = zeros (blocksize - prefix_length) in
+    worker ~byte_num:0 ~block_num:0 ~msg:Bytes.empty ~pad
 end
