@@ -8,4 +8,4 @@ end
 
 val of_hex_string : string -> Bytes.t
 
-val to_hex_string : Bytes.t -> string
+val to_hex_string : ?separator:string -> Bytes.t -> string

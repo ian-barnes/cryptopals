@@ -112,7 +112,7 @@ module Client = struct
        the ciphertext. *)
     let email = "1234567890" ^ "admin" ^ CCString.make 11 '\x0b' in
     let cookie = Server.generate_cookie_for email in
-    let admin_block = cookie |> Bytes.to_blocks |> CCList.get_at_idx_exn 1 in
+    let admin_block = cookie |> Blocks.of_bytes |> CCList.get_at_idx_exn 1 in
 
     (* Second evil email is the right length that the last block of the encoded
        profile is just the string "user" *)
@@ -121,8 +121,8 @@ module Client = struct
 
     (* Now construct our malicious cookie by replacing the last block of that
        cookie with the "admin" block from the first cookie *)
-    let blocks = Bytes.to_blocks cookie in
+    let blocks = Blocks.of_bytes cookie in
     let block_count = CCList.length blocks in
     CCList.append (CCList.take (block_count - 1) blocks) [admin_block]
-    |> Bytes.of_blocks
+    |> Blocks.to_bytes
 end

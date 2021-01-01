@@ -81,14 +81,14 @@ module Client = struct
               let encrypted_block =
                 payload
                 |> f
-                |> Bytes.to_blocks
+                |> Blocks.of_bytes
                 |> CCList.get_at_idx_exn block_num
               in
               BlockMap.add encrypted_block c map)
             chars BlockMap.empty
         in
         let target =
-          pad |> f |> Bytes.to_blocks |> CCList.get_at_idx_exn block_num
+          pad |> f |> Blocks.of_bytes |> CCList.get_at_idx_exn block_num
         in
         let next_char =
           try BlockMap.find target table with

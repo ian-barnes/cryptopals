@@ -62,14 +62,10 @@ let to_hex_pair c =
   let n = CCChar.to_int c in
   (n lsr 4, n land 0xf)
 
-let to_hex_string s =
-  let rec flattenpairs = function
-    | [] -> []
-    | (a, b) :: tail -> a :: b :: flattenpairs tail
-  in
+let to_hex_string ?(separator = "") s =
   s
   |> Bytes.to_char_list
   |> CCList.map to_hex_pair
-  |> flattenpairs
-  |> CCList.map Digit.of_int
-  |> CCString.of_list
+  |> CCList.map (fun (x, y) ->
+         [Digit.of_int x; Digit.of_int y] |> CCString.of_list)
+  |> CCString.concat separator

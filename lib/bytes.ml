@@ -34,26 +34,17 @@ let sub = CCString.sub
 
 let get = CCString.get
 
+let set n c t = CCString.set t n c
+
 let pad = CCString.pad
 
 let empty = ""
 
 let is_empty = CCString.is_empty
 
-let to_blocks ?blocksize:(n = 16) msg =
-  Assert.assert_with "bad msg length" (length msg mod n = 0);
-  let rec worker msg acc =
-    match length msg with
-    | 0 -> CCList.rev acc
-    | _ ->
-      let (h, t) = take_drop n msg in
-      worker t (h :: acc)
-  in
-  worker msg []
-
-let of_blocks blocks = CCString.concat "" blocks
-
 let append ~suffix s = s ^ suffix
+
+let ( || ) x y = append x ~suffix:y
 
 let prepend ~prefix s = prefix ^ s
 
@@ -66,3 +57,7 @@ let to_printable_string = String.escaped
 let compare = compare
 
 let of_char c = of_char_list [c]
+
+let concat = CCString.concat ""
+
+let zeros ?blocksize:(n = 16) () = repeat (of_char '\x00') n

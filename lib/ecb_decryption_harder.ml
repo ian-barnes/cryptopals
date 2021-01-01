@@ -63,10 +63,10 @@ module Client = struct
   (* Step 3: Determine the length of the random prefix *)
 
   let prefix_length f blocksize =
-    let target = zeros blocksize |> f |> Bytes.to_blocks |> CCList.hd in
+    let target = zeros blocksize |> f |> Blocks.of_bytes |> CCList.hd in
     let deficit =
       Util.range 1 blocksize
-      |> CCList.map (fun n -> (n, zeros n |> f |> Bytes.to_blocks |> CCList.hd))
+      |> CCList.map (fun n -> (n, zeros n |> f |> Blocks.of_bytes |> CCList.hd))
       |> CCList.find (fun (_, block) -> block = target)
       |> fst
     in
@@ -101,14 +101,14 @@ module Client = struct
               let encrypted_block =
                 payload
                 |> f
-                |> Bytes.to_blocks
+                |> Blocks.of_bytes
                 |> CCList.get_at_idx_exn block_num
               in
               BlockMap.add encrypted_block c map)
             chars BlockMap.empty
         in
         let target =
-          pad |> f |> Bytes.to_blocks |> CCList.get_at_idx_exn block_num
+          pad |> f |> Blocks.of_bytes |> CCList.get_at_idx_exn block_num
         in
         let next_char =
           try BlockMap.find target table with
