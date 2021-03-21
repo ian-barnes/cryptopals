@@ -1,31 +1,36 @@
-.PHONY: check deps build format test slow run clean
+.PHONY: help check deps build format test slow run clean
 
-check:
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+		| sort | awk 'BEGIN {FS = ":.*?## "}; \
+		{printf "\033[36m%-8s\033[0m %s\n", $$1, $$2}'
+
+check:  ## Type check
 	dune build @check
 	@echo
 
-deps:
+deps:  ## Refresh dependencies
 	opam install . --deps-only --locked --working-dir
 
-build: check
+build: check  ## Full compilation
 	dune build @default
 	@echo
 
-format:
+format:  ## Reformat code
 	dune build @fmt --auto-promote
 	@echo
 
-test: build
+test: build  ## Run fast unit tests
 	dune build @runtest
 	@echo
 
-slow: build
+slow: build  ## Run all unit tests
 	dune build @slowtests
 	@echo
 
-run: build
+run: build  ## Run
 	dune exec main
 	@echo
 
-clean:
+clean:  ## Clean workspace
 	dune clean
