@@ -111,8 +111,8 @@ module Client = struct
           pad |> f |> Bytes.to_blocks |> CCList.get_at_idx_exn block_num
         in
         let next_char =
-          try BlockMap.find target table
-          with Not_found -> failwith "no match found in table!"
+          try BlockMap.find target table with
+          | Not_found -> failwith "no match found in table!"
         in
         let msg = Bytes.append msg ~suffix:(Bytes.of_char next_char) in
         let (block_num, pad) =
