@@ -1,16 +1,14 @@
 (* Challenge 14 *)
 
-let _ = Random.self_init ()
-
 module Server = struct
   (* Part 1: the server. This is very similar to Challenge 12 except that this
      time the oracle also prepends a random number (between 5 and 10) of random
      bytes to the client input before appending the unknown string, padding and
      encrypting. *)
 
-  let blocksize = 16
+  let blocksize = Aes.blocksize
 
-  let key = Ecb_cbc_detection_oracle.random_aes_key ()
+  let key = Aes.random_key ()
 
   let unknown =
     {|
@@ -21,7 +19,7 @@ module Server = struct
     |}
     |> Base64.of_base64
 
-  let random_prefix = Util.random_bytes (5 + Random.int 5)
+  let random_prefix = Bytes.random (5 + Random.int 5)
 
   let oracle data =
     data

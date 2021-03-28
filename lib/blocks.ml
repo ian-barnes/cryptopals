@@ -1,12 +1,12 @@
 type t = Bytes.t list
 
-let of_bytes ?blocksize:(n = 16) bytes =
-  Assert.assert_with "bad msg length" (Bytes.length bytes mod n = 0);
+let of_bytes ?(blocksize = Aes.blocksize) bytes =
+  Assert.assert_with "bad msg length" (Bytes.length bytes mod blocksize = 0);
   let rec worker msg acc =
     match Bytes.length msg with
     | 0 -> CCList.rev acc
     | _ ->
-      let (h, t) = Bytes.take_drop n msg in
+      let (h, t) = Bytes.take_drop blocksize msg in
       worker t (h :: acc)
   in
   worker bytes []

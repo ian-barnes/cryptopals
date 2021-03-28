@@ -26,7 +26,7 @@ val take_drop : int -> t -> t * t
 
 val sub : t -> int -> int -> t
 
-val get : t -> int -> char
+val get : int -> t -> char
 
 val set : int -> char -> t -> t
 
@@ -53,3 +53,7 @@ val of_char : char -> t
 val concat : t list -> t
 
 val zeros : ?blocksize:int -> unit -> t
+
+val stripes : int -> t -> t list
+
+val random : int -> t

@@ -1,7 +1,5 @@
 open Lib.Ecb_cbc_detection_oracle
 
-let _ = Random.self_init ()
-
 let test_once ~mode =
   let cipher = encryption_oracle_helper mode in
   block_mode_detector cipher = mode

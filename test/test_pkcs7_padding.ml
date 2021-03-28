@@ -2,26 +2,20 @@ open Lib
 
 let test_pad ~input ~expected () =
   let actual =
-    input
-    |> Bytes.of_string
-    |> Pkcs7_padding.pad ~blocksize:16
-    |> Bytes.to_string
+    input |> Bytes.of_string |> Pkcs7_padding.pad |> Bytes.to_string
   in
   Alcotest.(check string) "Correct PKCS#7 padding" expected actual
 
 let test_unpad_good ~input ~expected () =
   let actual =
-    input
-    |> Bytes.of_string
-    |> Pkcs7_padding.unpad ~blocksize:16
-    |> Bytes.to_string
+    input |> Bytes.of_string |> Pkcs7_padding.unpad |> Bytes.to_string
   in
   Alcotest.(check string) "Correct padding" expected actual
 
 let test_unpad_bad ~input () =
   let msg = "padding error" in
   let f () =
-    let _ = input |> Bytes.of_string |> Pkcs7_padding.unpad ~blocksize:16 in
+    let _ = input |> Bytes.of_string |> Pkcs7_padding.unpad in
     ()
   in
   Alcotest.check_raises "Bad padding" (Failure msg) f

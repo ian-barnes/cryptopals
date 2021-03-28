@@ -1,5 +1,3 @@
-let _ = Random.self_init ()
-
 let range a b =
   let rec worker a b acc =
     if a > b then
@@ -22,26 +20,6 @@ let printable =
       else
         '?')
 
-let list_stripes n l =
-  let rec worker i acc = function
-    | [] -> CCList.map CCList.rev acc
-    | h :: t ->
-      worker
-        ((i + 1) mod n)
-        (CCList.mapi
-           (fun j ll ->
-             if i = j then
-               h :: ll
-             else
-               ll)
-           acc)
-        t
-  in
-  worker 0 (CCList.replicate n []) l
-
-let stripes n s =
-  s |> Bytes.to_char_list |> list_stripes n |> CCList.map Bytes.of_char_list
-
 let wrap n s =
   let rec worker s acc =
     if CCString.length s > n then
@@ -52,10 +30,39 @@ let wrap n s =
   in
   worker s [] |> CCList.rev |> CCString.concat "\n"
 
-let random_bytes length =
-  let rec worker n acc =
-    match n with
-    | 0 -> acc |> CCList.rev_map CCChar.of_int_exn |> Bytes.of_char_list
-    | n -> worker (n - 1) (Random.int 256 :: acc)
-  in
-  worker length []
+let char_to_hex c = c |> Char.code |> Printf.sprintf "%02x"
+
+module List = struct
+  type 'a t = 'a list
+
+  let to_pairs t =
+    let rec worker acc ys =
+      match ys with
+      | a :: b :: cs -> worker ((a, b) :: acc) (b :: cs)
+      | _ -> CCList.rev acc
+    in
+    worker [] t
+
+  let stripes n t =
+    let rec worker i acc = function
+      | [] -> CCList.map CCList.rev acc
+      | head :: tail ->
+        worker
+          ((i + 1) mod n)
+          (CCList.mapi
+             (fun j ll ->
+               if i = j then
+                 head :: ll
+               else
+                 ll)
+             acc)
+          tail
+    in
+    worker 0 (CCList.replicate n []) t
+end
+
+module Char = struct
+  type t = char
+
+  let xor t t' = CCChar.to_int t lxor CCChar.to_int t' |> CCChar.of_int_exn
+end

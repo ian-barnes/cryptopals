@@ -1,13 +1,9 @@
 (* Challenge 16 *)
 
-let _ = Random.self_init ()
-
 module Server = struct
   (* The server we're attacking *)
 
-  let blocksize = 16
-
-  let key = Ecb_cbc_detection_oracle.random_aes_key ()
+  let key = Aes.random_key ()
 
   let print_blocks bytes =
     Printf.printf "%s\n" (bytes |> Blocks.of_bytes |> Blocks.to_printable_string)
@@ -20,7 +16,7 @@ module Server = struct
     in
     CCString.flat_map quote_char s
 
-  let encrypt ?(iv = Bytes.zeros ~blocksize ()) input =
+  let encrypt ?(iv = Bytes.zeros ()) input =
     input
     |> quote
     |> (fun s ->
@@ -28,7 +24,7 @@ module Server = struct
          ^ s
          ^ ";comment2=%20like%20a%20pound%20of%20bacon")
     |> Bytes.of_string
-    |> Pkcs7_padding.pad ~blocksize
+    |> Pkcs7_padding.pad
     |> Cbc_mode.encrypt ~key ~iv
 
   module StringMap = CCMap.Make (struct
@@ -40,13 +36,15 @@ module Server = struct
   let parse data =
     data
     |> CCString.split ~by:";"
-    |> CCList.map (CCString.Split.left_exn ~by:"=")
+    |> CCList.map (fun s ->
+           try CCString.Split.left_exn ~by:"=" s with
+           | Not_found -> (s, ""))
     |> StringMap.of_list
 
-  let decrypt ?(iv = Bytes.zeros ~blocksize ()) ciphertext =
+  let decrypt ?(iv = Bytes.zeros ()) ciphertext =
     ciphertext
     |> Cbc_mode.decrypt ~key ~iv
-    |> Pkcs7_padding.unpad ~blocksize
+    |> Pkcs7_padding.unpad
     |> Bytes.to_string
 
   let check_admin map =
@@ -54,14 +52,13 @@ module Server = struct
     | Some s when s = "true" -> true
     | _ -> false
 
-  let got_admin ?(iv = Bytes.zeros ~blocksize ()) ciphertext =
+  let got_admin ?(iv = Bytes.zeros ()) ciphertext =
     ciphertext |> decrypt ~iv |> parse |> check_admin
 end
 
 module Client = struct
   (* Client flips bits in the ciphertext to get admin rights from the
      server. *)
-  let blocksize = 16
 
   let naive_msg = "foobar;admin=true"
 
@@ -80,7 +77,7 @@ module Client = struct
 
        so we just have to change the 'X' in block 2 to ';' and the
        'Y' to '='. *)
-    let zero_block = Bytes.zeros ~blocksize () in
+    let zero_block = Bytes.zeros () in
 
     let big_x_at_bit_6 = Bytes.set 6 'X' zero_block in
     let semicolon_at_bit_6 = Bytes.set 6 ';' zero_block in
@@ -106,6 +103,10 @@ module Client = struct
     (* This obvious injection attack shouldn't work *)
     Assert.assert_with "should fail"
       (naive_msg |> Server.encrypt |> Server.got_admin = false);
+
+    (* The smart message shouldn't work without bit-flipping *)
+    Assert.assert_with "should fail"
+      (smart_msg |> Server.encrypt |> Server.got_admin = false);
 
     (* Instead we just make sure that what we want is easily obtainable
        by bit-flipping within a single block *)

@@ -61,7 +61,7 @@ let guess_key (b : Bytes.t) =
   (* Guess key length *)
   let n = best_guess_key_length b in
   (* Split ciphertext into bands by index mod key length *)
-  let stripes = Util.stripes n b in
+  let stripes = Bytes.stripes n b in
   (* Find the single character key for each band *)
   let keys =
     CCList.map (fun bs -> bs |> Single_char_xor.crack |> fst) stripes

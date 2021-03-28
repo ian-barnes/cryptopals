@@ -1,15 +1,13 @@
 (* Challenge 12 *)
 
-let _ = Random.self_init ()
-
 module Server = struct
   (* Part 1: the server. The oracle takes arbitrary input from a client, appends
      the unknown string, PKCS#7 pads the result, encrypts it with an unknown key
      using AES/ECB, and returns the resulting ciphertext. *)
 
-  let blocksize = 16
+  let blocksize = Aes.blocksize
 
-  let key = Ecb_cbc_detection_oracle.random_aes_key ()
+  let key = Aes.random_key ()
 
   let unknown =
     {|

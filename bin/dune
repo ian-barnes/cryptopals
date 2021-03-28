@@ -1,4 +1,6 @@
 (executable
  (public_name main)
  (name main)
- (libraries lib containers nocrypto))
+ (libraries lib containers nocrypto)
+ (preprocess
+  (pps ppx_deriving.std)))

@@ -1,16 +1,5 @@
 (* Challenge 11 *)
 
-(* Nocrypto_entropy_unix.initialize ();
-   let cs = Nocrypto.Rng.generate 16 in
-   let s = cs |> Cstruct.to_string |> Bytes.of_string |> Hex.to_hex_string in
-   print_endline s; *)
-
-let _ = Random.self_init ()
-
-(* Part 1: A function to generate a random AES key *)
-
-let random_aes_key () = Util.random_bytes 16
-
 module Block_mode = struct
   type t =
     | ECB
@@ -26,10 +15,10 @@ end
    after the given plaintext input data. *)
 
 let encryption_oracle_helper mode data =
-  let key = random_aes_key () in
-  let iv = random_aes_key () in
-  let prefix = Util.random_bytes (5 + Random.int 5) in
-  let suffix = Util.random_bytes (5 + Random.int 5) in
+  let key = Aes.random_key () in
+  let iv = Aes.random_key () in
+  let prefix = Bytes.random (5 + Random.int 5) in
+  let suffix = Bytes.random (5 + Random.int 5) in
   let cipher =
     match mode with
     | Block_mode.ECB -> Aes_ecb_mode.encrypt ~key
@@ -38,7 +27,7 @@ let encryption_oracle_helper mode data =
   data
   |> Bytes.prepend ~prefix
   |> Bytes.append ~suffix
-  |> Pkcs7_padding.pad ~blocksize:16
+  |> Pkcs7_padding.pad
   |> cipher
 
 let encryption_oracle data =

@@ -2,7 +2,7 @@ open Lib.Cbc_bit_flipping
 
 let test ~input ~expected () =
   let actual = Server.got_admin input in
-  Alcotest.(check bool) "Server" expected actual
+  Alcotest.(check bool) "Got admin" expected actual
 
 let tests =
   [ Alcotest.test_case "Naive injection attack fails" `Quick

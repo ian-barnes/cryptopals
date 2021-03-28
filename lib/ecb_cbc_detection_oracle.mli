@@ -1,5 +1,3 @@
-val random_aes_key : unit -> Bytes.t
-
 module Block_mode : sig
   type t =
     | ECB

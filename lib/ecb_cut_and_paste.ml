@@ -1,9 +1,7 @@
 (* Challenge 13 *)
 
-let _ = Random.self_init ()
-
 (* A data module for storing the user profiles that are the subject of this
-exercise *)
+   exercise *)
 
 module User_profile = struct
   module Role = struct
@@ -75,9 +73,7 @@ module Server = struct
      cookie. The client can also send a cookie/ciphertext for validation, and if
      it checks out, the server will return a user profile object. The goal here
      is to trick it into validating us as an admin user. *)
-  let blocksize = 16
-
-  let key = Ecb_cbc_detection_oracle.random_aes_key ()
+  let key = Aes.random_key ()
 
   let profile_for (email : string) : User_profile.t =
     (* Make sure this can't be hacked by special characters in the email address *)
@@ -88,13 +84,13 @@ module Server = struct
     profile
     |> User_profile.encode
     |> Bytes.of_string
-    |> Pkcs7_padding.pad ~blocksize
+    |> Pkcs7_padding.pad
     |> Aes_ecb_mode.encrypt ~key
 
   let decrypt bytes =
     bytes
     |> Aes_ecb_mode.decrypt ~key
-    |> Pkcs7_padding.unpad ~blocksize
+    |> Pkcs7_padding.unpad
     |> Bytes.to_string
     |> User_profile.parse
 
