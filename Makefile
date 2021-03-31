@@ -7,30 +7,27 @@ help:
 
 check:  ## Type check
 	dune build @check
-	@echo
 
 deps:  ## Refresh dependencies
 	opam install . --deps-only --locked --working-dir
 
 build: check  ## Full compilation
 	dune build @default
-	@echo
 
 format:  ## Reformat code
 	dune build @fmt --auto-promote
-	@echo
 
 test: build  ## Run fast unit tests
 	dune build @runtest
-	@echo
 
 slow: build  ## Run all unit tests
 	dune build @slowtests
-	@echo
 
 run: build  ## Run
 	dune exec main
-	@echo
+
+docs:  ## Build documentation
+	dune build @doc @doc-private
 
 clean:  ## Clean workspace
 	dune clean
