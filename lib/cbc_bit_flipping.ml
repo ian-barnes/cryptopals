@@ -16,7 +16,7 @@ module Server = struct
     in
     CCString.flat_map quote_char s
 
-  let encrypt ?(iv = Bytes.zeros ()) input =
+  let encrypt ?(iv = Bytes.zeros ~length:Aes.blocksize) input =
     input
     |> quote
     |> (fun s ->
@@ -41,7 +41,7 @@ module Server = struct
            | Not_found -> (s, ""))
     |> StringMap.of_list
 
-  let decrypt ?(iv = Bytes.zeros ()) ciphertext =
+  let decrypt ?(iv = Bytes.zeros ~length:Aes.blocksize) ciphertext =
     ciphertext
     |> Cbc_mode.decrypt ~key ~iv
     |> Pkcs7_padding.unpad
@@ -52,7 +52,7 @@ module Server = struct
     | Some s when s = "true" -> true
     | _ -> false
 
-  let got_admin ?(iv = Bytes.zeros ()) ciphertext =
+  let got_admin ?(iv = Bytes.zeros ~length:Aes.blocksize) ciphertext =
     ciphertext |> decrypt ~iv |> parse |> check_admin
 end
 
@@ -77,7 +77,7 @@ module Client = struct
 
        so we just have to change the 'X' in block 2 to ';' and the
        'Y' to '='. *)
-    let zero_block = Bytes.zeros () in
+    let zero_block = Bytes.zeros ~length:Aes.blocksize in
 
     let big_x_at_bit_6 = Bytes.set 6 'X' zero_block in
     let semicolon_at_bit_6 = Bytes.set 6 ';' zero_block in

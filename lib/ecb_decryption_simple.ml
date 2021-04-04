@@ -31,7 +31,7 @@ module Client = struct
 
   let zeros n = CCString.make n '\x00' |> Bytes.of_string
 
-  let chars = Util.range 0 255 |> CCList.map Char.chr
+  let chars = Util.Int.range 0 255 |> CCList.map Char.chr
 
   module BlockMap = CCMap.Make (Bytes)
 
@@ -42,7 +42,7 @@ module Client = struct
   let blocksize_and_length f =
     let a = Bytes.empty |> f |> Bytes.length in
     let (n, b) =
-      Util.range 1 64
+      Util.Int.range 1 64
       |> CCList.map (fun n -> (n, zeros n |> f |> Bytes.length))
       |> CCList.find (fun (_, length) -> length > a)
     in

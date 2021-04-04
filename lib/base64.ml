@@ -154,7 +154,7 @@ let two_to_one a b =
   [first] |> CCList.map CCChar.of_int_exn |> CCString.of_list
 
 let of_base64 s =
-  let s = Util.remove_whitespace s in
+  let s = Util.String.remove_whitespace s in
   Assert.assert_with "base64: bad length" (CCString.length s mod 4 = 0);
   let ints =
     s

@@ -1,36 +1,25 @@
-let range a b =
-  let rec worker a b acc =
-    if a > b then
-      acc
-    else
-      worker a (b - 1) (b :: acc)
-  in
-  worker a b []
+module Int = struct
+  type t = int
 
-let remove_whitespace s =
-  let remove c =
-    CCString.replace ~which:`All ~sub:(CCChar.to_string c) ~by:""
-  in
-  s |> remove ' ' |> remove '\n' |> remove '\t' |> remove '\r'
-
-let printable =
-  CCString.map (fun c ->
-      if c >= ' ' && c <= '~' then
-        c
+  let range a b =
+    let rec worker a b acc =
+      if a > b then
+        acc
       else
-        '?')
+        worker a (b - 1) (b :: acc)
+    in
+    worker a b []
+end
 
-let wrap n s =
-  let rec worker s acc =
-    if CCString.length s > n then
-      let (line, rest) = CCString.take_drop n s in
-      worker rest (line :: acc)
-    else
-      s :: acc
-  in
-  worker s [] |> CCList.rev |> CCString.concat "\n"
+module String = struct
+  type t = string
 
-let char_to_hex c = c |> Char.code |> Printf.sprintf "%02x"
+  let remove_whitespace s =
+    let remove c =
+      CCString.replace ~which:`All ~sub:(CCChar.to_string c) ~by:""
+    in
+    s |> remove ' ' |> remove '\n' |> remove '\t' |> remove '\r'
+end
 
 module List = struct
   type 'a t = 'a list

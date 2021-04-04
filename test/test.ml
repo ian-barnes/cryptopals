@@ -20,4 +20,5 @@ let () =
     ; ("Challenge 14", Test_ecb_decryption_harder.tests)
     ; ("Challenge 15", Test_pkcs7_padding.unpad_tests)
     ; ("Challenge 16", Test_cbc_bit_flipping.tests)
-    ; ("Challenge 17", Test_vaudenay.tests) ]
+    ; ("Challenge 17", Test_vaudenay.tests)
+    ; ("Challenge 18", Test_ctr_mode.tests) ]

@@ -70,7 +70,7 @@ let crack (s : Bytes.t) : char * Bytes.t =
   CharMap.empty
   |> CCList.fold_right
        (fun c m -> CharMap.add c (Bytes.xor s (mask c)) m)
-       (CCList.map CCChar.of_int_exn (Util.range 0 255))
+       (CCList.map CCChar.of_int_exn (Util.Int.range 0 255))
   |> CharMap.map (fun s -> (s, score s))
   |> CharMap.to_list
   |> CCList.sort (fun (_, (_, x)) (_, (_, x')) -> compare x x')

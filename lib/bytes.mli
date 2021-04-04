@@ -52,7 +52,7 @@ val of_char : char -> t
 
 val concat : t list -> t
 
-val zeros : ?blocksize:int -> unit -> t
+val zeros : length:int -> t
 
 val stripes : int -> t -> t list
 

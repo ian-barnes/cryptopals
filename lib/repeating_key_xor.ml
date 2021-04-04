@@ -48,7 +48,7 @@ let key_length_score (s : Bytes.t) len =
 
 let best_guess_key_length (s : Bytes.t) =
   let scores =
-    Util.range 2 40
+    Util.Int.range 2 40
     |> CCList.map (fun length -> (length, key_length_score s length))
     |> CCList.sort (fun (_, score) (_, score') -> compare score score')
   in

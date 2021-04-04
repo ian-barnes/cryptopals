@@ -48,7 +48,7 @@ let int_of_hex_byte a b =
   (16 * a) + b
 
 let of_hex_string s =
-  let s = Util.remove_whitespace s in
+  let s = Util.String.remove_whitespace s in
   let chars = CCString.to_list s in
   let rec worker cs acc =
     match cs with

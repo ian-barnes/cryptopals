@@ -1,19 +1,19 @@
 module Server = struct
   let key = Aes.random_key ()
 
-  let encrypt ?(iv = Bytes.zeros ()) msg =
+  let encrypt ?(iv = Bytes.zeros ~length:Aes.blocksize) msg =
     let ciphertext =
       msg |> Bytes.of_string |> Pkcs7_padding.pad |> Cbc_mode.encrypt ~key ~iv
     in
     (ciphertext, iv)
 
-  let decrypt ?(iv = Bytes.zeros ()) ciphertext =
+  let decrypt ?(iv = Bytes.zeros ~length:Aes.blocksize) ciphertext =
     ciphertext
     |> Cbc_mode.decrypt ~key ~iv
     |> Pkcs7_padding.unpad
     |> Bytes.to_string
 
-  let oracle ?(iv = Bytes.zeros ()) ciphertext =
+  let oracle ?(iv = Bytes.zeros ~length:Aes.blocksize) ciphertext =
     try
       let _ = decrypt ~iv ciphertext in
       true
@@ -24,7 +24,7 @@ end
 module Client = struct
   let blocksize = Aes.blocksize
 
-  let chars = List.init 256 Char.chr
+  let chars = Util.Int.range 0 255 |> CCList.map Char.chr
 
   let force_one_byte ~(c1 : Bytes.t) ~(c2 : Bytes.t) ~(acc : Bytes.t) : char =
     (* Given two consecutive blocks of ciphertext and a string containing a

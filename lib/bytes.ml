@@ -60,7 +60,7 @@ let of_char c = of_char_list [c]
 
 let concat = CCString.concat ""
 
-let zeros ?(blocksize = 16) () = repeat (of_char '\x00') blocksize
+let zeros ~length = repeat (of_char '\x00') length
 
 let stripes n t =
   t |> to_char_list |> Util.List.stripes n |> CCList.map of_char_list

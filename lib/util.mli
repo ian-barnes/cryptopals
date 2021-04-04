@@ -1,12 +1,14 @@
-val range : int -> int -> int list
+module Int : sig
+  type t = int
 
-val remove_whitespace : string -> string
+  val range : t -> t -> t list
+end
 
-val printable : string -> string
+module String : sig
+  type t = string
 
-val wrap : int -> string -> string
-
-val char_to_hex : char -> string
+  val remove_whitespace : t -> t
+end
 
 module List : sig
   type 'a t = 'a list
