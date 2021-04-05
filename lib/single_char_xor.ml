@@ -5,7 +5,7 @@ module CharMap = CCMap.Make (struct
 end)
 
 let etaoin =
-  [ (' ', 2000) (* rough guess: almost twice as many spaces as E's *)
+  [ (' ', 1400) (* rough guess: a bit more spaces than E's *)
   ; ('E', 1249) (* remainder from Norvig *)
   ; ('T', 928)
   ; ('A', 804)

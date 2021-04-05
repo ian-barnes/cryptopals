@@ -13,9 +13,6 @@ let of_char_list = CCString.of_list
 let xor a b =
   Assert.assert_with "xor: lengths must be equal"
     (CCString.length a = CCString.length b);
-  (* let char_xor c c' =
-       CCChar.to_int c lxor CCChar.to_int c' |> CCChar.of_int_exn
-     in *)
   CCString.map2 Util.Char.xor a b
 
 let lowercase_ascii = CCString.lowercase_ascii

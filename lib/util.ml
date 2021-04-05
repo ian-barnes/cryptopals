@@ -48,6 +48,11 @@ module List = struct
           tail
     in
     worker 0 (CCList.replicate n []) t
+
+  let rec transpose = function
+    | [] -> []
+    | [] :: _ -> []
+    | rows -> CCList.map CCList.hd rows :: transpose (CCList.map CCList.tl rows)
 end
 
 module Char = struct
