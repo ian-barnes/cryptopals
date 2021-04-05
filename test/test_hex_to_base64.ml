@@ -1,7 +1,7 @@
 open Lib
 
 let test ~input ~expected () =
-  let actual = input |> Hex.of_hex_string |> Base64.to_base64 in
+  let actual = input |> Hex.decode |> Base64.encode in
   Alcotest.(check string) "Hex to Base64" expected actual
 
 let tests =

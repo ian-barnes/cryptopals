@@ -3,7 +3,7 @@ open Lib
 let test_decrypt ~key ~nonce ~ciphertext ~expected () =
   let actual =
     ciphertext
-    |> Base64.of_base64
+    |> Base64.decode
     |> Ctr_mode.decrypt ~key ~nonce
     |> Bytes.to_printable_string
   in

@@ -1,9 +1,9 @@
 open Lib
 
 let test ~first ~second ~expected () =
-  let first = Hex.of_hex_string first in
-  let second = Hex.of_hex_string second in
-  let actual = Bytes.xor first second |> Hex.to_hex_string in
+  let first = Hex.decode first in
+  let second = Hex.decode second in
+  let actual = Bytes.xor first second |> Hex.encode in
   Alcotest.(check string) "Challenge 2" expected actual
 
 let tests =

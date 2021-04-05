@@ -1,12 +1,12 @@
 open Lib
 
 let test_of_hex ~input ~expected () =
-  let actual = input |> Hex.of_hex_string |> Bytes.to_string in
-  Alcotest.(check string) "of_hex_string" expected actual
+  let actual = input |> Hex.decode |> Bytes.to_string in
+  Alcotest.(check string) "to_bytes" expected actual
 
 let test_to_hex ~input ~expected () =
-  let actual = input |> Bytes.of_string |> Hex.to_hex_string in
-  Alcotest.(check string) "to_hex_string" expected actual
+  let actual = input |> Bytes.of_string |> Hex.encode in
+  Alcotest.(check string) "of_bytes" expected actual
 
 let tests =
   [ Alcotest.test_case "test_of_hex" `Quick

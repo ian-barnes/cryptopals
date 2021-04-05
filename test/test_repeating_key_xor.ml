@@ -2,7 +2,7 @@ let test ~input ~key ~expected () =
   let actual =
     Lib.Repeating_key_xor.encode ~key:(Lib.Bytes.of_string key)
       (Lib.Bytes.of_string input)
-    |> Lib.Hex.to_hex_string
+    |> Lib.Hex.encode
   in
   Alcotest.(check string) "Repeating key XOR" expected actual
 

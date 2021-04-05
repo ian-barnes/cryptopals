@@ -42,30 +42,38 @@ module Digit = struct
     | _ -> failwith ("Hex.of_int: Invalid hex digit " ^ string_of_int n)
 end
 
-let int_of_hex_byte a b =
-  let a = Digit.to_int a in
-  let b = Digit.to_int b in
-  (16 * a) + b
+module Pair = struct
+  type t =
+    { left : Digit.t
+    ; right : Digit.t }
 
-let of_hex_string s =
-  let s = Util.String.remove_whitespace s in
-  let chars = CCString.to_list s in
+  let to_byte t =
+    let left = Digit.to_int t.left in
+    let right = Digit.to_int t.right in
+    (16 * left) + right |> CCChar.of_int_exn
+
+  let of_byte c =
+    let n = CCChar.code c in
+    let left = n lsr 4 |> Digit.of_int in
+    let right = n land 0xf |> Digit.of_int in
+    {left; right}
+end
+
+type t = string
+
+let decode t =
+  let chars = t |> Util.String.remove_whitespace |> CCString.to_list in
   let rec worker cs acc =
     match cs with
-    | a :: b :: tail -> worker tail (int_of_hex_byte a b :: acc)
-    | [] -> Bytes.of_char_list (CCList.rev_map CCChar.of_int_exn acc)
-    | _ -> failwith "Number of characters must be even"
+    | left :: right :: tail -> worker tail (Pair.to_byte {left; right} :: acc)
+    | [] -> Bytes.of_char_list (CCList.rev acc)
+    | _ -> failwith "Hex string with odd length"
   in
   worker chars []
 
-let to_hex_pair c =
-  let n = CCChar.to_int c in
-  (n lsr 4, n land 0xf)
-
-let to_hex_string ?(separator = "") s =
-  s
+let encode ?(separator = "") bytes =
+  bytes
   |> Bytes.to_char_list
-  |> CCList.map to_hex_pair
-  |> CCList.map (fun (x, y) ->
-         [Digit.of_int x; Digit.of_int y] |> CCString.of_list)
+  |> CCList.map Pair.of_byte
+  |> CCList.map (fun {Pair.left; right} -> [left; right] |> CCString.of_list)
   |> CCString.concat separator

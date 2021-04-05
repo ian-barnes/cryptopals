@@ -7,7 +7,7 @@ let test ~input ~expected () =
 
 let tests =
   Lib.File.read_lines "17.txt"
-  |> CCList.map Base64.of_base64
+  |> CCList.map Base64.decode
   |> CCList.map Bytes.to_string
   |> CCList.mapi (fun num msg ->
          let iv = Aes.random_key () in

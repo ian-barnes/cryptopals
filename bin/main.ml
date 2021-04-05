@@ -8,6 +8,6 @@ let () =
   let nonce = Bytes.zeros ~length:8 in
   Printf.printf "\"%s\"\n"
     (msg
-    |> Base64.of_base64
+    |> Base64.decode
     |> Ctr_mode.decrypt ~key ~nonce
     |> Bytes.to_printable_string)

@@ -2,12 +2,9 @@ open Lib
 
 let test ~input ~expected () =
   let actual =
-    input
-    |> CCList.map Hex.of_hex_string
-    |> Aes_ecb_mode.detect
-    |> Bytes.to_string
+    input |> CCList.map Hex.decode |> Aes_ecb_mode.detect |> Bytes.to_string
   in
-  let expected = expected |> Hex.of_hex_string |> Bytes.to_string in
+  let expected = expected |> Hex.decode |> Bytes.to_string in
   Alcotest.(check string) "Detect AES ECB mode" expected actual
 
 let tests =

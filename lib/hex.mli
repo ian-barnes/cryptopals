@@ -1,11 +1,5 @@
-module Digit : sig
-  type t
+type t = string
 
-  val of_int : int -> t
+val decode : t -> Bytes.t
 
-  val to_int : t -> int
-end
-
-val of_hex_string : string -> Bytes.t
-
-val to_hex_string : ?separator:string -> Bytes.t -> string
+val encode : ?separator:string -> Bytes.t -> t

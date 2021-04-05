@@ -138,6 +138,8 @@ module Char = struct
     | _ -> failwith "Only valid for characters in [A-Za-z0-9+/]"
 end
 
+type t = string
+
 let four_to_three a b c d =
   let first = (a lsl 2) lor (b lsr 4) in
   let second = ((b land 0xf) lsl 4) lor (c lsr 2) in
@@ -153,8 +155,8 @@ let two_to_one a b =
   let first = (a lsl 2) lor (b lsr 4) in
   [first] |> CCList.map CCChar.of_int_exn |> CCString.of_list
 
-let of_base64 s =
-  let s = Util.String.remove_whitespace s in
+let decode t =
+  let s = Util.String.remove_whitespace t in
   Assert.assert_with "base64: bad length" (CCString.length s mod 4 = 0);
   let ints =
     s
@@ -190,8 +192,8 @@ let one_to_two a =
   let second = (a land 0x3) lsl 4 in
   [first; second] |> CCList.map Char.of_int |> CCString.of_list
 
-let to_base64 s =
-  let ints = s |> Bytes.to_char_list |> CCList.map CCChar.to_int in
+let encode bytes =
+  let ints = bytes |> Bytes.to_char_list |> CCList.map CCChar.code in
   let rec worker chars acc =
     match chars with
     | a :: b :: c :: tail -> worker tail (acc ^ three_to_four a b c)

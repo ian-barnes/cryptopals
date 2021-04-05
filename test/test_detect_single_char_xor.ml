@@ -2,10 +2,7 @@ open Lib
 
 let test_detect_single_char_xor ~input ~expected () =
   let actual =
-    input
-    |> CCList.map Hex.of_hex_string
-    |> Single_char_xor.detect
-    |> Bytes.to_string
+    input |> CCList.map Hex.decode |> Single_char_xor.detect |> Bytes.to_string
   in
   Alcotest.(check string) "Challenge 4" expected actual
 

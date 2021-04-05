@@ -17,7 +17,7 @@ module Server = struct
       dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg
       YnkK
     |}
-    |> Base64.of_base64
+    |> Base64.decode
 
   let random_prefix = Bytes.random (5 + Random.int 5)
 

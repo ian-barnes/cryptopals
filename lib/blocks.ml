@@ -16,5 +16,5 @@ let to_bytes t = Bytes.concat t
 let to_printable_string t =
   t
   |> CCList.map (fun block ->
-         Hex.to_hex_string block ^ " " ^ Bytes.to_printable_string block)
+         Hex.encode block ^ " " ^ Bytes.to_printable_string block)
   |> CCString.concat "\n"

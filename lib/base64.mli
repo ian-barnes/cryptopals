@@ -1,11 +1,13 @@
 module Char : sig
-  type t
+  type t = char
 
   val of_int : int -> t
 
   val to_int : t -> int
 end
 
-val of_base64 : string -> Bytes.t
+type t = string
 
-val to_base64 : Bytes.t -> string
+val decode : t -> Bytes.t
+
+val encode : Bytes.t -> t
