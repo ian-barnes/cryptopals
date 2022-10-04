@@ -3,6 +3,7 @@
 - Work in progress
 - OCaml solutions to the [Cryptopals Crypto Challenges](https://cryptopals.com/)
 - Completed Sets 1 & 2
+- Done the first two exercises in Set 3, working on the next two...
 
 ## Workflow
 
