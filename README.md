@@ -4,7 +4,7 @@
 - OCaml solutions to the [Cryptopals Crypto Challenges](https://cryptopals.com/)
 - Completed Sets 1 & 2
 
-# Workflow
+## Workflow
 
 - During development / experimentation, new code lives in `bin/main.ml`.
 - As it improves, useful functions get abstracted out and moved into `lib/`.
