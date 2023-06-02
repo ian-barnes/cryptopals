@@ -1,6 +1,5 @@
 module Server : sig
   val encrypt : ?iv:Bytes.t -> string -> Bytes.t * Bytes.t
-
   val oracle : ?iv:Bytes.t -> Bytes.t -> bool
 end
 

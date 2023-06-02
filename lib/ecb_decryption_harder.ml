@@ -7,7 +7,6 @@ module Server = struct
      encrypting. *)
 
   let blocksize = Aes.blocksize
-
   let key = Aes.random_key ()
 
   let unknown =
@@ -34,7 +33,6 @@ module Client = struct
      decrypt the unknown string. *)
 
   let zeros n = CCString.make n '\x00' |> Bytes.of_string
-
   let chars = Util.Int.range 0 255 |> CCList.map Char.chr
 
   module BlockMap = CCMap.Make (Bytes)

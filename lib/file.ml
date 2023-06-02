@@ -21,7 +21,6 @@ let read_all f =
   add_char [] |> CCString.of_list
 
 let last s = CCString.get s (CCString.length s - 1)
-
 let has_final_newline s = last s = '\n'
 
 let ensure_final_newline s =

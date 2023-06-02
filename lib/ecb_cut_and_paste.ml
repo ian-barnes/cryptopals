@@ -27,11 +27,8 @@ module User_profile = struct
     ; role : Role.t }
 
   let email t = t.email
-
   let uid t = t.uid
-
   let role t = t.role
-
   let make ~email ?(uid = 10) ?(role = Role.User) () = {email; uid; role}
 
   let encode t =
@@ -95,7 +92,6 @@ module Server = struct
     |> User_profile.parse
 
   let generate_cookie_for email = email |> profile_for |> encrypt
-
   let validate cookie = cookie |> decrypt
 end
 

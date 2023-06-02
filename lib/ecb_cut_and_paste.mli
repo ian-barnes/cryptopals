@@ -6,7 +6,6 @@ module User_profile : sig
     [@@deriving eq, show]
 
     val to_string : t -> string
-
     val of_string : string -> t
   end
 
@@ -16,23 +15,16 @@ module User_profile : sig
     ; role : Role.t }
 
   val email : t -> string
-
   val uid : t -> int
-
   val role : t -> Role.t
-
   val make : email:string -> ?uid:int -> ?role:Role.t -> unit -> t
-
   val encode : t -> string
-
   val parse : string -> t
-
   val to_json : t -> Yojson.Safe.t
 end
 
 module Server : sig
   val generate_cookie_for : string -> Bytes.t
-
   val validate : Bytes.t -> User_profile.t
 end
 

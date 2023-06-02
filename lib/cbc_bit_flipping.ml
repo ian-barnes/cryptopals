@@ -61,7 +61,6 @@ module Client = struct
      server. *)
 
   let naive_msg = "foobar;admin=true"
-
   let smart_msg = "foobarXadminYtrue"
 
   let flip_bits ciphertext =

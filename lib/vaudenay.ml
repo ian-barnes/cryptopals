@@ -23,7 +23,6 @@ end
 
 module Client = struct
   let blocksize = Aes.blocksize
-
   let chars = Util.Int.range 0 255 |> CCList.map Char.chr
 
   let force_one_byte ~(c1 : Bytes.t) ~(c2 : Bytes.t) ~(acc : Bytes.t) : char =

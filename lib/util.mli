@@ -14,9 +14,7 @@ module List : sig
   type 'a t = 'a list
 
   val to_pairs : 'a t -> ('a * 'a) t
-
   val stripes : int -> 'a t -> 'a t t
-
   val transpose : 'a t t -> 'a t t
 end
 
